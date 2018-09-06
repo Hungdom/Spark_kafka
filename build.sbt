@@ -16,3 +16,5 @@ libraryDependencies ++= Seq(
 
   "org.apache.spark" %% "spark-sql" % sparkVersion
 )
+// https://mvnrepository.com/artifact/org.apache.kafka/kafka
+libraryDependencies += "org.apache.kafka" %% "kafka" % "2.0.0"

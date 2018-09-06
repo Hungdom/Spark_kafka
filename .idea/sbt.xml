@@ -14,6 +14,7 @@
         </option>
         <option name="resolveClassifiers" value="false" />
         <option name="sbtVersion" value="1.2.1" />
+        <option name="useSbtShell" value="true" />
       </SbtProjectSettings>
     </option>
   </component>
