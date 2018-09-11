@@ -1,2 +1,3 @@
 [0m[[0m[0mdebug[0m] [0m[0mCopy resource mappings: [0m
 [0m[[0m[0mdebug[0m] [0m[0m	(/home/hung/Workspace/Training/Prepare_package/Spark_kafka/src/main/resources/log4j.properties,/home/hung/Workspace/Training/Prepare_package/Spark_kafka/target/scala-2.11/classes/log4j.properties)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/home/hung/Workspace/Training/Prepare_package/Spark_kafka/src/main/resources/metadata.json,/home/hung/Workspace/Training/Prepare_package/Spark_kafka/target/scala-2.11/classes/metadata.json)[0m

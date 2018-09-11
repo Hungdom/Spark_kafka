@@ -4,6 +4,8 @@
       <root url="jar://$USER_HOME$/.ivy2/cache/net.iharder/base64/jars/base64-2.3.8.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/net.iharder/base64/srcs/base64-2.3.8-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

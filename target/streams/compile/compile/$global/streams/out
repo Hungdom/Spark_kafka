@@ -1,2 +1,10 @@
-[0m[[0m[33mwarn[0m] [0m[0mthere was one deprecation warning; re-run with -deprecation for details[0m
-[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m
+[0m[[0m[31merror[0m] [0m[0m/home/hung/Workspace/Training/Prepare_package/Spark_kafka/src/main/scala/Example/com/SimpleStreaming.scala:29:27: not found: type EmbeddedKafkaServer[0m
+[0m[[0m[31merror[0m] [0m[0m    val kafkaServer = new EmbeddedKafkaServer()[0m
+[0m[[0m[31merror[0m] [0m[0m                          ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/hung/Workspace/Training/Prepare_package/Spark_kafka/src/main/scala/Example/com/SimpleStreaming.scala:43:29: not found: value SimpleKafkaClient[0m
+[0m[[0m[31merror[0m] [0m[0m    val props: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer)[0m
+[0m[[0m[31merror[0m] [0m[0m                            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/hung/Workspace/Training/Prepare_package/Spark_kafka/src/main/scala/Example/com/SimpleStreaming.scala:78:26: not found: type SimpleKafkaClient[0m
+[0m[[0m[31merror[0m] [0m[0m        val client = new SimpleKafkaClient(kafkaServer)[0m
+[0m[[0m[31merror[0m] [0m[0m                         ^[0m
+[0m[[0m[31merror[0m] [0m[0mthree errors found[0m
