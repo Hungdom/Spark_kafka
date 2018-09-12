@@ -8,9 +8,6 @@ import org.apache.spark.sql.types.StructType
 object StreamJsonToKafka {
   def main (args: Array[String]): Unit = {
     val conf = new SparkConf().setAppName("StreamJsonToKafka").setMaster("local[3]")
-    //create SparkContext
-    //val sc = new SparkContext(conf)
-    //set SparkSession
     val spark = SparkSession
       .builder()
       .config(conf)
