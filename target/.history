@@ -51,3 +51,9 @@ all {file:/home/hung/Workspace/Training/Prepare_package/Spark_kafka/}spark_kafka
 all {file:/home/hung/Workspace/Training/Prepare_package/Spark_kafka/}spark_kafka/products {file:/home/hung/Workspace/Training/Prepare_package/Spark_kafka/}spark_kafka/test:products
 ;reload; set _root_.org.jetbrains.sbt.StructureKeys.sbtStructureOptions in Global := "download resolveClassifiers resolveSbtClassifiers" ;*/*:dumpStructureTo /tmp/sbt-structure.xml; session clear-all
 all {file:/home/hung/Workspace/Training/Prepare_package/Spark_kafka/}spark_kafka/products {file:/home/hung/Workspace/Training/Prepare_package/Spark_kafka/}spark_kafka/test:products
+;reload; set _root_.org.jetbrains.sbt.StructureKeys.sbtStructureOptions in Global := "download resolveClassifiers resolveSbtClassifiers" ;*/*:dumpStructureTo /tmp/sbt-structure.xml; session clear-all
+all {file:/home/hung/Workspace/Training/Prepare_package/Spark_kafka/}spark_kafka/products {file:/home/hung/Workspace/Training/Prepare_package/Spark_kafka/}spark_kafka/test:products
+;reload; set _root_.org.jetbrains.sbt.StructureKeys.sbtStructureOptions in Global := "download resolveClassifiers resolveSbtClassifiers" ;*/*:dumpStructureTo /tmp/sbt-structure.xml; session clear-all
+all {file:/home/hung/Workspace/Training/Prepare_package/Spark_kafka/}spark_kafka/products {file:/home/hung/Workspace/Training/Prepare_package/Spark_kafka/}spark_kafka/test:products
+;reload; set _root_.org.jetbrains.sbt.StructureKeys.sbtStructureOptions in Global := "download resolveClassifiers resolveSbtClassifiers" ;*/*:dumpStructureTo /tmp/sbt-structure.xml; session clear-all
+all {file:/home/hung/Workspace/Training/Prepare_package/Spark_kafka/}spark_kafka/products {file:/home/hung/Workspace/Training/Prepare_package/Spark_kafka/}spark_kafka/test:products

@@ -19,6 +19,7 @@ libraryDependencies ++= Seq(
 )
 // https://mvnrepository.com/artifact/org.apache.kafka/kafka
 libraryDependencies += "org.apache.kafka" %% "kafka" % "2.0.0"
+libraryDependencies += "org.postgresql" % "postgresql" % "9.4-1201-jdbc41"
 
 dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-core" % "2.9.4"
 dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.4"

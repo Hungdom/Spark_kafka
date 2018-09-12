@@ -4,7 +4,7 @@
 		module="spark_kafka$sources_2.12"
 		revision="0.1"
 		status="integration"
-		publication="20180910093121"
+		publication="20180912152851"
 	/>
 	<configurations>
 		<conf name="default" visibility="public" description=""/>

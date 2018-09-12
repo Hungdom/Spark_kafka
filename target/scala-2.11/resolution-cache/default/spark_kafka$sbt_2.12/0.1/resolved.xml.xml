@@ -4,7 +4,7 @@
 		module="spark_kafka$sbt_2.12"
 		revision="0.1"
 		status="integration"
-		publication="20180910093115"
+		publication="20180912152839"
 	/>
 	<configurations>
 		<conf name="compile" visibility="public" description=""/>

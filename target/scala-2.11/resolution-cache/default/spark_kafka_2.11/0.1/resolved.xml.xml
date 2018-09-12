@@ -4,7 +4,7 @@
 		module="spark_kafka_2.11"
 		revision="0.1"
 		status="integration"
-		publication="20180910093116"
+		publication="20180912152839"
 	>
 		<description>
 		Spark_kafka
@@ -38,6 +38,7 @@
 		<dependency org="org.apache.spark" name="spark-sql-kafka-0-10_2.11" rev="2.3.1" conf="compile->default(compile)"/>
 		<dependency org="org.apache.spark" name="spark-sql_2.11" rev="2.3.1" conf="compile->default(compile)"/>
 		<dependency org="org.apache.kafka" name="kafka_2.11" rev="2.0.0" conf="compile->default(compile)"/>
+		<dependency org="org.postgresql" name="postgresql" rev="9.4-1201-jdbc41" conf="compile->default(compile)"/>
 		<override org="com.fasterxml.jackson.core" module="jackson-core" matcher="exact" rev="2.9.4"/>
 		<override org="com.fasterxml.jackson.core" module="jackson-databind" matcher="exact" rev="2.9.4"/>
 		<override org="com.fasterxml.jackson.module" module="jackson-module-scala_2.11" matcher="exact" rev="2.9.4"/>

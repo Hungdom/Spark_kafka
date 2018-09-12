@@ -3,22 +3,23 @@ package stream.video
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.streaming.StreamingQuery
+import org.apache.spark.sql.types.{IntegerType, StringType, StructField}
 import org.apache.spark.sql.{ForeachWriter, Row, SparkSession}
 
 object StreamDataFromKafka {
 
-  class recordRawData(var topic:String, var datetime:String, var action:String, var data:String)
-  {
-    //rawData:[streaming_video,2018-09-11 17:57:47.385,delete,{"_id":"54abb0a717dc13146fdcf4e1"}]
-    def parseRawData(rawData:String): Unit ={
-      val listraw=rawData.split(",",4)
-
-    }
-  }
-  //get_Action: get first column, and delete it
-  def getAction(rawData : String): Unit ={
-
-  }
+  val dataSchema = List(
+    StructField("item_id", StringType, true),
+    StructField("title", StringType, true),
+    StructField("type", StringType, true),
+    StructField("publish", IntegerType, true),
+    StructField("publish_date", StringType, true),
+    StructField("episode_total", IntegerType, true),
+    StructField("episode_current", IntegerType, true),
+    StructField("last_video_add_date", StringType, true),
+    StructField("is_delete", IntegerType, true),
+    StructField("create_day", StringType, true)
+  )
 
 
   def main (args: Array[String]): Unit = {
@@ -27,29 +28,23 @@ object StreamDataFromKafka {
       .builder()
       .config(conf)
       .getOrCreate()
-//    set path
-//    val path = "/tmp/out"
 
     val topic_name = "streaming_video"
     val kafka_broker = "localhost:9092"
 
     //Creating a Kafka Source for Streaming Queries
-    //Subscribe to 1 topic:test
     //kafka Source get from topic streaming_video
     val dfk = spark
       .readStream
       .format("kafka")
-      //.option("rowPerSecond","1")
       .option("kafka.bootstrap.servers", kafka_broker)
-      //.option("checkpointLocation", "checkpoint")
-      //.option("startingOffsets", "latest")
       .option("subscribe", topic_name)
       .load()
       .selectExpr("CAST(topic AS STRING)","CAST(timestamp AS STRING)","CAST(key AS STRING)","CAST(value AS STRING)")
-      //.selectExpr("CAST(key AS STRING)","CAST(value AS STRING)")
 
     //show data Stream to console
     println(dfk)
+    //foreachWriter write data to postgresql
     val query1: StreamingQuery = dfk
       .writeStream
         .foreach(new ForeachWriter[Row] {
@@ -75,28 +70,66 @@ object StreamDataFromKafka {
             val splitrawdata: Array[String] =tmp.split(",",4)
 
             println(splitrawdata(2))
+            //get topic, datetime and action
+            val topic=splitrawdata(0)
+            val datetime=splitrawdata(1)
+            val action = splitrawdata(2)
 
+            //parse data to json node
             val mapper = new ObjectMapper()
             val jnode: JsonNode =mapper.readTree(splitrawdata(3))
             println(jnode)
 
-            println(jnode.findValues("_id"))
+            //load data from postgreSQL by jdbc
+            val jdbcDF = spark.read
+              .format("jdbc")
+              .option("url", "jdbc:postgresql:streaming")
+              .option("dbtable", "video")
+              .option("user", "postgres")
+              .option("password", "dominic")
+              .load()
 
+            jdbcDF.show()
 
-//          working with insert/update/delete
-            if(splitrawdata(2)=="insert"){
-              println(splitrawdata(3))
-            }else if(splitrawdata(2)=="update"){
-              println(splitrawdata(3))
-            }else if(splitrawdata(2)=="delete"){
-              println(splitrawdata(3))
+            //working with insert/update/delete
+            if(action=="insert"){
+              //get from:
+              // _id    | title | type | status | episode_total | episode_current | last_video_and_date
+              //parse to:
+              //item_id | title | type | publish | *publish_date | episode_total | episode_current | last_video_and_date | *is_delete=0 | *create_date
+              println(jnode.path("_id"))
+              println(jnode.path("title"))
+              println(jnode.path("type"))
+              println(jnode.path("status"))
+              println(jnode.path("last_video_add_date"))
+              println(jnode.path("episode_current"))
+              println(jnode.path("episode_total"))
+
+            }else if(action=="update"){
+              // detect item_id in psql.
+              // update val
+              println(jnode.path("_id"))
+              println(jnode.path("title"))
+              println(jnode.path("type"))
+              println(jnode.path("status"))
+              println(jnode.path("last_video_add_date"))
+              println(jnode.path("episode_current"))
+              println(jnode.path("episode_total"))
+
+            }else if(action=="delete"){
+              // detect item_id in psql
+              // update is_delete=1
+              println(jnode.path("_id"))
             }
 
-
-
-            //working with
-
-
+            // Saving data to a JDBC source
+            jdbcDF.write
+              .format("jdbc")
+              .option("url", "jdbc:postgresql:streaming")
+              .option("dbtable", "video")
+              .option("user", "postgres")
+              .option("password", "dominic")
+              .save()
 
           }
 
@@ -106,10 +139,8 @@ object StreamDataFromKafka {
             myVersion = None
           }
         })
-      //.format("console")
       .start()
     query1.awaitTermination()
-
     /////////////////////////////////////////Finish Stream/////////////////////////////////////////////////////////////
   }
 }
