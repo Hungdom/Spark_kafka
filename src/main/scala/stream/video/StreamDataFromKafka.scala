@@ -23,12 +23,15 @@ object StreamDataFromKafka {
       val itemId = jsonNode.path("_id").toString
       val updateIsDeleteSQL =
         """
-          |UPDATE video SET is_delete = 1 WHERE item_id = ?
+          |insert into video (item_id,is_delete)
+          |values(?,1)
+          |ON CONFLICT (item_id) DO UPDATE
+          |SET is_delete = 1;
         """.stripMargin
       val preparedStmt =conn.prepareStatement(updateIsDeleteSQL)
       preparedStmt.setString(1,itemId)
       preparedStmt.execute()
-      println("set is_delete for "+itemId)
+      println("Delete or update for "+itemId)
       preparedStmt.close()
     }
     else {
@@ -37,65 +40,75 @@ object StreamDataFromKafka {
       val typeV = jsonNode.path("type").toString
       val status = jsonNode.path("status").toString
       val publish = status.toInt
-      val y = "1111-11-11 11:11:11.111"
-      var publishDate = Timestamp.valueOf(y)
+      val TimeStampDefault = "1970-01-01 00:00:00.1"//set default of publish_date
+      var publishDateDefault = Timestamp.valueOf(TimeStampDefault)
       val episodeTotal = jsonNode.path("episode_total").toString
       val episodeCurrent = jsonNode.path("episode_current").toString
-      val lastVideoAndDate = jsonNode.path("last_video_add_date").toString
-      val tmpLastVideoAndDate = lastVideoAndDate.slice(1, lastVideoAndDate.length - 1)
-      val LastVideoAndDate = Timestamp.valueOf(tmpLastVideoAndDate)
-      ////////////////////////////////Insert into video (table)/////////////////////////////////////////////////////////
-      if (action == "insert") {
-        //create date = sysTime*/
-        val createDate = Timestamp.valueOf(sysTime)
-
-        //video already publish: publishDate =LastVideoAndDate
-        if (publish == 1) {
-          publishDate = LastVideoAndDate
-        }
-        //insert query
-        val insertSQL =
+      val lastVAD = jsonNode.path("last_video_add_date").toString
+      val tmpLastVAD = lastVAD.slice(1, lastVAD.length - 1)
+      val lastVideoAddDate = Timestamp.valueOf(tmpLastVAD)
+      ////////////////////////////////Insert + Update into video (table)////////////////////////////////////////////////
+      //create date = sysTime*/
+      val createDate = Timestamp.valueOf(sysTime)
+      //insert + update
+      val insertSQL =
+        """
+          |insert into video (item_id,title,type,episode_total,episode_current,last_video_add_date,is_delete,create_date)
+          |values(?,?,?,?,?,?,?,?)
+          |ON CONFLICT (item_id) DO UPDATE
+          |SET title = EXCLUDED.title, type = EXCLUDED.type, publish = EXCLUDED.publish, publish_date = EXCLUDED.publish_date,
+          |episode_total = EXCLUDED.episode_total, episode_current = EXCLUDED.episode_current,
+          |last_video_add_date = EXCLUDED.last_video_add_date, create_date = EXCLUDED.create_date;
+        """.stripMargin
+      val preparedStmt = conn.prepareStatement(insertSQL)
+      preparedStmt.setString(1, itemId)
+      preparedStmt.setString(2, title)
+      preparedStmt.setString(3, typeV)
+      preparedStmt.setInt(4, episodeTotal.toInt)
+      preparedStmt.setInt(5, episodeCurrent.toInt)
+      preparedStmt.setTimestamp(6, lastVideoAddDate)
+      preparedStmt.setInt(7, 0)
+      preparedStmt.setTimestamp(8, createDate)
+      preparedStmt.execute()
+      println("Insert or Update new row with id " + itemId)
+      preparedStmt.close()
+      //////////////////////////// Update publish and publish_date into video///////////////////////////////////////////
+      val updatePulishDate=true
+      if (publish == 0) { //write default publish date into publish date
+        val updatePublishSQL =
           """
-            |insert into video (item_id,title,type,publish,publish_date,episode_total,episode_current,last_video_add_date,is_delete,create_date)
-            |values(?,?,?,?,?,?,?,?,?,?)
-          """.stripMargin
-        val preparedStmt = conn.prepareStatement(insertSQL)
-        preparedStmt.setString(1, itemId)
-        preparedStmt.setString(2, title)
-        preparedStmt.setString(3, typeV)
-        preparedStmt.setInt(4, publish)
-        preparedStmt.setTimestamp(5, publishDate)
-        preparedStmt.setInt(6, episodeTotal.toInt)
-        preparedStmt.setInt(7, episodeCurrent.toInt)
-        preparedStmt.setTimestamp(8, LastVideoAndDate)
-        preparedStmt.setInt(9, 0)
-        preparedStmt.setTimestamp(10, createDate)
-        preparedStmt.execute()
-        preparedStmt.close()
-      }////////////////////////////////Update into Video ///////////////////////////////////////////////////////////////
-      else if (action == "update") {
-        //get current status of publish
-        if (publish == 1) {
-          publishDate = Timestamp.valueOf(sysTime)
-        }
-        val updateSQL =
-          """
-            |UPDATE video SET  title = ?, type = ?, publish = ?, publish_date = ?, episode_total = ?, episode_current = ?, last_video_add_date = ?
+            |UPDATE video SET publish = ?, publish_date = ?
             |WHERE item_id = ?
           """.stripMargin
-        val preparedStmt =conn.prepareStatement(updateSQL)
-        preparedStmt.setString(8, itemId)
-        preparedStmt.setString(1, title)
-        preparedStmt.setString(2, typeV)
-        preparedStmt.setInt(3, publish)
-        preparedStmt.setTimestamp(4, publishDate)
-        preparedStmt.setInt(5, episodeTotal.toInt)
-        preparedStmt.setInt(6, episodeCurrent.toInt)
-        preparedStmt.setTimestamp(7, LastVideoAndDate)
-        preparedStmt.execute()
-        preparedStmt.close()
-        println("updated for "+ itemId)
+        val updatedStmt = conn.prepareStatement(updatePublishSQL)
+        updatedStmt.setInt(1,0)
+        updatedStmt.setTimestamp(2,publishDateDefault)
+        updatedStmt.setString(3,itemId)
+        updatedStmt.close()
+      }else if (publish != 0 && updatePulishDate){
+        val updatePublishSQL =
+          """
+            |UPDATE video SET publish = ?, publish_date = ?
+            |WHERE item_id = ? AND publish = 0
+          """.stripMargin
+        val updatedStmt = conn.prepareStatement(updatePublishSQL)
+        updatedStmt.setInt(1,1)
+        updatedStmt.setTimestamp(2,createDate)
+        updatedStmt.setString(3,itemId)
+        updatedStmt.close()
+      }else if (publish != 0 && !updatePulishDate){
+        val updatePublishSQL =
+          """
+            |UPDATE video SET publish = ?, publish_date = ?
+            |WHERE item_id = ? AND publish = 1
+          """.stripMargin
+        val updatedStmt = conn.prepareStatement(updatePublishSQL)
+        updatedStmt.setInt(1,1)
+        updatedStmt.setTimestamp(2,lastVideoAddDate)
+        updatedStmt.setString(3,itemId)
+        updatedStmt.close()
       }
+      //////////////////////////// Update publish and publish_date into video///////////////////////////////////////////
     }
     conn.close()
   }
@@ -107,11 +120,10 @@ object StreamDataFromKafka {
       .config(conf)
       .getOrCreate()
 
-    val topic_name = "streaming_video"
-    val kafka_broker = "localhost:9092"
-
     //Creating a Kafka Source for Streaming Queries
     //kafka Source get from topic streaming_video
+    val topic_name = "streaming_video"
+    val kafka_broker = "localhost:9092"
     val dfk = spark
       .readStream
       .format("kafka")
@@ -119,9 +131,9 @@ object StreamDataFromKafka {
       .option("subscribe", topic_name)
       .load()
       .selectExpr("CAST(topic AS STRING)","CAST(timestamp AS STRING)","CAST(key AS STRING)","CAST(value AS STRING)")
-
     //show data Stream to console
-    println(dfk)
+    //println(dfk)
+
     //foreachWriter write data to postgresql
     val query1: StreamingQuery = dfk
       .writeStream
@@ -167,6 +179,6 @@ object StreamDataFromKafka {
         })
       .start()
     query1.awaitTermination()
-    /////////////////////////////////////////Finish Stream/////////////////////////////////////////////////////////////
+    /////////////////////////////////////////Finish Stream//////////////////////////////////////////////////////////////
   }
 }

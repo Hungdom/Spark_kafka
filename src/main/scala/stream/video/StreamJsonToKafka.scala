@@ -43,6 +43,8 @@ object StreamJsonToKafka {
       .option("topic", topic_name)
       //.format("console")
       .start
+    println("Start streaming data from: "+path)
+    println("to topic: "+ topic_name)
     dsk.awaitTermination()
   }
 }
