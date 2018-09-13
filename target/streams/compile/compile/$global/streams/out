@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0m/home/hung/Workspace/Training/Prepare_package/Spark_kafka/src/main/scala/stream/video/jdbc_postgresql.scala:25:48: identifier expected but integer literal found.[0m
-[0m[[0m[31merror[0m] [0m[0m    val data1: DataFrame = {"directors_detail":1,""}[0m
-[0m[[0m[31merror[0m] [0m[0m                                               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/hung/Workspace/Training/Prepare_package/Spark_kafka/src/main/scala/stream/video/StreamDataFromKafka.scala:47:21: reassignment to val[0m
+[0m[[0m[31merror[0m] [0m[0m        publishDate =LastVideoAndDate[0m
+[0m[[0m[31merror[0m] [0m[0m                    ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m
