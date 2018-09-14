@@ -86,32 +86,31 @@ object StreamDataFromKafka {
         updatedStmt.execute()
         updatedStmt.close()
       }else if (publish == 1){
-        println("publish ==1")
         //publish : 1 (insert)
         val updatePublishSQL2 =
           """
             |UPDATE video SET publish = ?, publish_date = ?
-            |WHERE item_id = ?;
+            |WHERE item_id = ? AND publish_date IS NULL;
           """.stripMargin
-        val updatedStmt2 = conn.prepareStatement(updatePublishSQL2)
-        updatedStmt2.setInt(1,1)
-        updatedStmt2.setTimestamp(2,lastVideoAddDate)
-        updatedStmt2.setString(3,itemId)
-        updatedStmt2.execute()
-        updatedStmt2.close()
+        val updatedStmt1 = conn.prepareStatement(updatePublishSQL2)
+        updatedStmt1.setInt(1,1)
+        updatedStmt1.setTimestamp(2,lastVideoAddDate)
+        updatedStmt1.setString(3,itemId)
+        updatedStmt1.execute()
+        updatedStmt1.close()
         //publish : 0 --> 1
         val updatePublishSQL1 =
           """
             |UPDATE video SET publish = ?, publish_date = ?
             |WHERE item_id = ? AND publish_date = ?;
           """.stripMargin
-        val updatedStmt1 = conn.prepareStatement(updatePublishSQL1)
-        updatedStmt1.setInt(1,1)
-        updatedStmt1.setTimestamp(2,createDate)
-        updatedStmt1.setString(3,itemId)
-        updatedStmt1.setTimestamp(4,publishDateDefault)
-        updatedStmt1.execute()
-        updatedStmt1.close()
+        val updatedStmt2 = conn.prepareStatement(updatePublishSQL1)
+        updatedStmt2.setInt(1,1)
+        updatedStmt2.setTimestamp(2,createDate)
+        updatedStmt2.setString(3,itemId)
+        updatedStmt2.setTimestamp(4,publishDateDefault)
+        updatedStmt2.execute()
+        updatedStmt2.close()
       }
       //////////////////////////// Update publish and publish_date into video///////////////////////////////////////////
     }
