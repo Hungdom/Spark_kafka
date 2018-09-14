@@ -73,40 +73,45 @@ object StreamDataFromKafka {
       println("Insert or Update new row with id " + itemId)
       preparedStmt.close()
       //////////////////////////// Update publish and publish_date into video///////////////////////////////////////////
-      val updatePublishDate=true
       if (publish == 0) { //write default publish date into publish date
         val updatePublishSQL =
           """
             |UPDATE video SET publish = ?, publish_date = ?
-            |WHERE item_id = ?
+            |WHERE item_id = ?;
           """.stripMargin
         val updatedStmt = conn.prepareStatement(updatePublishSQL)
         updatedStmt.setInt(1,0)
         updatedStmt.setTimestamp(2,publishDateDefault)
         updatedStmt.setString(3,itemId)
+        updatedStmt.execute()
         updatedStmt.close()
-      }else if (publish != 0 && updatePublishDate){
-        val updatePublishSQL =
+      }else if (publish == 1){
+        println("publish ==1")
+        //publish : 1 (insert)
+        val updatePublishSQL2 =
           """
             |UPDATE video SET publish = ?, publish_date = ?
-            |WHERE item_id = ? AND publish = 0
+            |WHERE item_id = ?;
           """.stripMargin
-        val updatedStmt = conn.prepareStatement(updatePublishSQL)
-        updatedStmt.setInt(1,1)
-        updatedStmt.setTimestamp(2,createDate)
-        updatedStmt.setString(3,itemId)
-        updatedStmt.close()
-      }else if (publish != 0 && !updatePublishDate){
-        val updatePublishSQL =
+        val updatedStmt2 = conn.prepareStatement(updatePublishSQL2)
+        updatedStmt2.setInt(1,1)
+        updatedStmt2.setTimestamp(2,lastVideoAddDate)
+        updatedStmt2.setString(3,itemId)
+        updatedStmt2.execute()
+        updatedStmt2.close()
+        //publish : 0 --> 1
+        val updatePublishSQL1 =
           """
             |UPDATE video SET publish = ?, publish_date = ?
-            |WHERE item_id = ? AND publish = 1
+            |WHERE item_id = ? AND publish_date = ?;
           """.stripMargin
-        val updatedStmt = conn.prepareStatement(updatePublishSQL)
-        updatedStmt.setInt(1,1)
-        updatedStmt.setTimestamp(2,lastVideoAddDate)
-        updatedStmt.setString(3,itemId)
-        updatedStmt.close()
+        val updatedStmt1 = conn.prepareStatement(updatePublishSQL1)
+        updatedStmt1.setInt(1,1)
+        updatedStmt1.setTimestamp(2,createDate)
+        updatedStmt1.setString(3,itemId)
+        updatedStmt1.setTimestamp(4,publishDateDefault)
+        updatedStmt1.execute()
+        updatedStmt1.close()
       }
       //////////////////////////// Update publish and publish_date into video///////////////////////////////////////////
     }
