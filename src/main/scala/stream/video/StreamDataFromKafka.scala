@@ -73,7 +73,7 @@ object StreamDataFromKafka {
       println("Insert or Update new row with id " + itemId)
       preparedStmt.close()
       //////////////////////////// Update publish and publish_date into video///////////////////////////////////////////
-      val updatePulishDate=true
+      val updatePublishDate=true
       if (publish == 0) { //write default publish date into publish date
         val updatePublishSQL =
           """
@@ -85,7 +85,7 @@ object StreamDataFromKafka {
         updatedStmt.setTimestamp(2,publishDateDefault)
         updatedStmt.setString(3,itemId)
         updatedStmt.close()
-      }else if (publish != 0 && updatePulishDate){
+      }else if (publish != 0 && updatePublishDate){
         val updatePublishSQL =
           """
             |UPDATE video SET publish = ?, publish_date = ?
@@ -96,7 +96,7 @@ object StreamDataFromKafka {
         updatedStmt.setTimestamp(2,createDate)
         updatedStmt.setString(3,itemId)
         updatedStmt.close()
-      }else if (publish != 0 && !updatePulishDate){
+      }else if (publish != 0 && !updatePublishDate){
         val updatePublishSQL =
           """
             |UPDATE video SET publish = ?, publish_date = ?
