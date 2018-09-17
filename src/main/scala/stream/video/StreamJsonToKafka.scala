@@ -25,8 +25,8 @@ object StreamJsonToKafka {
 //      .filter()
 
     //.load(path)
-    val topic_name = "streaming_video"
-    val kafka_broker = "localhost:9092"
+    val topicname = "streaming_video"
+    val kafkabroker = "localhost:9092"
 
     // Write key-value data from a DataFrame to a specific Kafka topic specified in an option
     val dsk = jsonDF
@@ -37,14 +37,14 @@ object StreamJsonToKafka {
       .writeStream
       .option("rowPerSecond","1")
       .format("kafka")
-      .option("kafka.bootstrap.servers", kafka_broker)
+      .option("kafka.bootstrap.servers", kafkabroker)
       .option("checkpointLocation", "checkpoint")
       //.option("startingOffsets", "latest")
-      .option("topic", topic_name)
+      .option("topic", topicname)
       //.format("console")
       .start
     println("Start streaming data from: "+path)
-    println("to topic: "+ topic_name)
+    println("to topic: "+ topicname)
     dsk.awaitTermination()
   }
 }
