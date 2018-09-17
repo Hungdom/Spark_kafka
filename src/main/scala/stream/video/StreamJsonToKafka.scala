@@ -2,7 +2,6 @@ package stream.video
 
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.types.StructType
 
 
 object StreamJsonToKafka {
@@ -15,36 +14,25 @@ object StreamJsonToKafka {
     //set path
     val path = "/tmp/meta"
 
-    //Creating streaming DataFrames from Json source
-    val schemaDF = new StructType().add("action", "String").add("data", "String").add("type", "String")
     val jsonDF = spark
       .readStream
-      .option("sep", ";")
-      .schema(schemaDF)
-      .json(path)
-//      .filter()
+      .text(path)
 
     //.load(path)
-    val topic_name = "streaming_video"
-    val kafka_broker = "localhost:9092"
+    val topicName = "streamvd"
+    val kafkaBroker = "localhost:9092"
 
     // Write key-value data from a DataFrame to a specific Kafka topic specified in an option
     val dsk = jsonDF
-      //.select("action","data","type")
-      .selectExpr("CAST(action AS STRING) as key", "CAST(data AS STRING) as value")
-      //filter type = video
-      .filter("type = 'video'")
       .writeStream
-      .option("rowPerSecond","1")
       .format("kafka")
-      .option("kafka.bootstrap.servers", kafka_broker)
+      .option("kafka.bootstrap.servers", kafkaBroker)
       .option("checkpointLocation", "checkpoint")
-      //.option("startingOffsets", "latest")
-      .option("topic", topic_name)
+      .option("topic", topicName)
       //.format("console")
       .start
     println("Start streaming data from: "+path)
-    println("to topic: "+ topic_name)
+    println("to topic: "+ topicName)
     dsk.awaitTermination()
   }
 }

@@ -26,3 +26,9 @@ dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.
 dependencyOverrides += "com.fasterxml.jackson.module" % "jackson-module-scala_2.11" % "2.9.4"
 
 
+assemblyMergeStrategy in assembly := {
+  case "infra.conf" => MergeStrategy.concat
+  case n if n.startsWith("META-INF/services/org.apache.spark.sql.sources.DataSourceRegister")  => MergeStrategy.concat
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
