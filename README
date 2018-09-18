@@ -1,3 +1,7 @@
 This PJ created by HungDom
 1. Demo Streaming writing from dir -> to kafka topic
 2. Demo Streaming reading from kafka topic -> postgreSQL
+
+command execute on YARN:
+spark-submit --class stream.video.StreamJsonToKafka --master yarn /home/hung/Workspace/Training/Prepare_package/Spark_kafka/target/scala-2.11/Spark_kafka-assembly-0.1.jar 
+spark-submit --class stream.video.StreamDataFromKafka --master yarn /home/hung/Workspace/Training/Prepare_package/Spark_kafka/target/scala-2.11/Spark_kafka-assembly-0.1.jar 

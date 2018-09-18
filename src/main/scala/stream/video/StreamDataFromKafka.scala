@@ -9,7 +9,7 @@ import org.apache.spark.sql.{ForeachWriter, Row, SparkSession}
 
 object StreamDataFromKafka {
 
-  def createSQLStatement(action:String,jsonNode:JsonNode, sysTime:String) {
+  def createSqlStatement(action:String,jsonNode:JsonNode, sysTime:String) {
     //get val from jsonNode
     println(action)
     println(jsonNode)
@@ -206,7 +206,7 @@ object StreamDataFromKafka {
             val jNode= mapper.readTree(dataOut)
 
             if(typeOfData == "video") {
-              createSQLStatement(action, jNode, datetime)
+              createSqlStatement(action, jNode, datetime)
             }
           }
 
